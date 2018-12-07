@@ -745,7 +745,7 @@ class AntennaBlockListener implements Listener {
             ant.setTipY(newTipY);
             event.getPlayer().sendMessage("Shrunk antenna range to " + ant.getBroadcastRadius() + " m");
 
-        } else if (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN_POST) {
+        } else if (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN) {
             Antenna ant = Antenna.getAntennaByAdjacent(block.getLocation());
             if (ant == null) {
                 return;
