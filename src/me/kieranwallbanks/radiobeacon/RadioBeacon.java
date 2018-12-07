@@ -424,7 +424,7 @@ class Antenna implements Comparable<Antenna> {
     static public void receiveSignalsAtPlayer(Player player) {
         ItemStack item = player.getInventory().getItemInMainHand();
 
-        if (item == null || item.getType() != Material.getMaterial(AntennaConf.mobileRadioItem) && AntennaPlayerListener.playerRadioEnabled(player)) {
+        if (item == null || item.getType() != AntennaConf.mobileRadioItem && AntennaPlayerListener.playerRadioEnabled(player)) {
             // Compass = mobile radio
             return;
         }
@@ -501,7 +501,7 @@ class Antenna implements Comparable<Antenna> {
             }
         } else if (signalLock) {
             if (AntennaConf.mobileSignalLock) {
-                // Player radio compass targetting
+                // Player radio compass targeting
                 Integer targetInteger = AntennaPlayerListener.playerTargets.get(player.getUniqueId());
                 Location targetLoc;
                 int targetInt;
@@ -903,7 +903,7 @@ class AntennaPlayerListener implements Listener {
             }
 
             // TODO: and if click anywhere within antenna? maybe not unless holding compass
-        } else if (item != null && item.getType() == Material.getMaterial(AntennaConf.mobileRadioItem) && AntennaPlayerListener.playerRadioEnabled(player)) {
+        } else if (item != null && item.getType() == AntennaConf.mobileRadioItem && AntennaPlayerListener.playerRadioEnabled(player)) {
             if (AntennaConf.mobileShiftTune) {
                 // hold Shift + click to tune
                 if (!player.isSneaking()) { 
@@ -948,7 +948,7 @@ class AntennaPlayerListener implements Listener {
         Player player = event.getPlayer();
         ItemStack item = player.getInventory().getItem(event.getNewSlot());
 
-        if (item != null && item.getType() == Material.getMaterial(AntennaConf.mobileRadioItem) && AntennaPlayerListener.playerRadioEnabled(player)) {
+        if (item != null && item.getType() == AntennaConf.mobileRadioItem && AntennaPlayerListener.playerRadioEnabled(player)) {
             // TODO: this actually doesn't receive signals on change, since this method checks
             // the player's items in hand, and the event is called before they actually change -
             // but, I actually like this design better since the player has to wait to receive.
@@ -976,7 +976,7 @@ class ReceptionTask implements Runnable {
         for (Player player: Bukkit.getOnlinePlayers()) {
             ItemStack item = player.getInventory().getItemInMainHand();
 
-            if (item != null && item.getType() == Material.getMaterial(AntennaConf.mobileRadioItem) && AntennaPlayerListener.playerRadioEnabled(player)) {
+            if (item != null && item.getType() == AntennaConf.mobileRadioItem && AntennaPlayerListener.playerRadioEnabled(player)) {
                // if scan increase is enabled, increment scan # each scan 
                 if (AntennaConf.mobileScanBonusRadius != 0) {   
                     Integer scanBonusObject = AntennaPlayerListener.playerScanBonus.get(player.getUniqueId());
@@ -1028,7 +1028,7 @@ class AntennaConf {
     static boolean fixedDenyAddMessageBreak;
     static String fixedDenyAddMessageMessage;
 
-    static String mobileRadioItem;
+    static Material mobileRadioItem;
     static int mobileInitialRadius;
     static int mobileIncreaseRadius;
     static int mobileMaxRadius;
@@ -1114,8 +1114,14 @@ class AntennaConf {
 
         fixedUnpoweredNagMessage = plugin.getConfig().getString("fixedUnpoweredNagMessage", "Tip: remove and place this block near redstone current to build an antenna");
 
+        mobileRadioItem = Material.matchMaterial(plugin.getConfig().getString("mobileRadioItem"));
+        if (mobileRadioItem == null) {
+            RadioBeacon.logger.severe("Failed to match mobileRadioItem");
+            Bukkit.getServer().getPluginManager().disablePlugin(plugin);
+            return false;
+        }
 
-        mobileRadioItem = plugin.getConfig().getString("mobileRadioItem", Material.COMPASS.name());
+
         mobileInitialRadius = plugin.getConfig().getInt("mobileInitialRadius", 0);
         mobileIncreaseRadius = plugin.getConfig().getInt("mobileIncreaseRadius", 10);
         mobileMaxRadius = plugin.getConfig().getInt("mobileMaxRadius", 10000);
@@ -1153,10 +1159,12 @@ class AntennaConf {
         return m == AntennaConf.fixedBaseMaterial || m == AntennaConf.fixedBaseRelayMaterial;
     }
 
+    /*
     static public boolean isFixedBaseMaterial(int id) {
         return id == AntennaConf.fixedBaseMaterial.getId() || id == AntennaConf.fixedBaseRelayMaterial.getId();
-    }
-   
+     }
+     */
+
     static private YamlConfiguration getAntennaConfig(Plugin plugin) {
         String filename = plugin.getDataFolder() + System.getProperty("file.separator") + "antennas.yml";
         File file = new File(filename);
