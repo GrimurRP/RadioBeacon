@@ -619,6 +619,23 @@ class AntennaBlockListener implements Listener {
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
+    public boolean isStandingSign(Block block) {
+        Material blockType = block.getType();
+        return blockType == Material.OAK_SIGN || blockType == Material.SPRUCE_SIGN
+                || blockType == Material.BIRCH_SIGN || blockType == Material.JUNGLE_SIGN
+                || blockType == Material.ACACIA_SIGN || blockType == Material.DARK_OAK_SIGN
+                || blockType == Material.CRIMSON_SIGN || blockType == Material.WARPED_SIGN;
+    }
+
+    public boolean isWallSign(Block block) {
+        Material blockType = block.getType();
+        return blockType == Material.OAK_WALL_SIGN || blockType == Material.SPRUCE_WALL_SIGN
+                || blockType == Material.BIRCH_WALL_SIGN || blockType == Material.JUNGLE_WALL_SIGN
+                || blockType == Material.ACACIA_WALL_SIGN || blockType == Material.DARK_OAK_WALL_SIGN
+                || blockType == Material.CRIMSON_WALL_SIGN || blockType == Material.WARPED_WALL_SIGN;
+    }
+
+
     // Building an antenna
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled=true)
     public void onBlockPlace(BlockPlaceEvent event) {
@@ -745,7 +762,7 @@ class AntennaBlockListener implements Listener {
             ant.setTipY(newTipY);
             event.getPlayer().sendMessage("Shrunk antenna range to " + ant.getBroadcastRadius() + " m");
 
-        } else if (block.getType() == Material.WALL_SIGN || block.getType() == Material.SIGN) {
+        } else if (isWallSign(block) || isStandingSign(block)) {
             Antenna ant = Antenna.getAntennaByAdjacent(block.getLocation());
             if (ant == null) {
                 return;
@@ -878,6 +895,14 @@ class AntennaPlayerListener implements Listener {
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
     }
 
+    public boolean isWallSign(Block block) {
+        Material blockType = block.getType();
+        return blockType == Material.OAK_WALL_SIGN || blockType == Material.SPRUCE_WALL_SIGN
+                || blockType == Material.BIRCH_WALL_SIGN || blockType == Material.JUNGLE_WALL_SIGN
+                || blockType == Material.ACACIA_WALL_SIGN || blockType == Material.DARK_OAK_WALL_SIGN
+                || blockType == Material.CRIMSON_WALL_SIGN || blockType == Material.WARPED_WALL_SIGN;
+    }
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled=true)
     public void onPlayerInteract(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
@@ -891,7 +916,7 @@ class AntennaPlayerListener implements Listener {
             }
 
             ant.receiveSignals(player);
-        } else if (block != null && block.getType() == Material.WALL_SIGN) {
+        } else if (block != null && isWallSign(block)) {
             for (int dx = -1; dx <= 1; dx += 1) {
                 for (int dz = -1; dz <= 1; dz += 1) {
                     Antenna ant = Antenna.getAntenna(block.getLocation().add(dx, 0, dz));

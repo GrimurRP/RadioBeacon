@@ -10,7 +10,7 @@ fixedBaseMinY: 0
 fixedBaseMaterial: iron_block
 #fixedBaseMaterial: jukebox
 fixedBaseRelayMaterial: gold_block
-fixedAntennaMaterial: iron_fence
+fixedAntennaMaterial: iron_bars
 #fixedRadiateFrom: base
 fixedRadiateFrom: tip
 fixedLightningAttractRadiusInitial: 3
